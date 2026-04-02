@@ -24,18 +24,10 @@ class DBNLQueryRequest(BaseModel):
     user_id: str = Field(default="anonymous", min_length=1)
 
 
-class DBSQLPreviewResponse(BaseModel):
-    question: str
-    generated_sql: str
-    parameters: list[str]
-
-
 class DBNLQueryResponse(BaseModel):
     rows: list[dict]
     summary: str
     latency_ms: int
-    generated_sql: str
-    parameters: list[str]
 
 
 class QueryHistoryItem(BaseModel):
@@ -58,10 +50,3 @@ class MetricsSummary(BaseModel):
     total_queries: int
     avg_latency_ms: float
     p95_latency_ms: float
-
-
-class KnowledgeReviewRequest(BaseModel):
-    source: str = Field(default="manual_v1.pdf#p1")
-    original_text: str = Field(min_length=2)
-    revised_text: str = Field(min_length=2)
-    reviewer: str = Field(default="admin")
