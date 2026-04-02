@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>On-Device LLM PoC UI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; background: #f8fafc; }
+    .card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    textarea, input, select { width: 100%; padding: 8px; margin-top: 8px; }
+    button { margin-top: 10px; padding: 8px 12px; }
+    pre { background: #0b1020; color: #d1e6ff; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  </style>
+</head>
+<body>
+  <h1>폐쇄망 On-Device LLM PoC UI</h1>
+
+  <div class="card">
+    <h2>1) QA 질의 (RAG / LLM Only)</h2>
+    <label>질문</label>
+    <textarea id="qaQuestion" rows="3">인증서 갱신 절차 알려줘</textarea>
+    <label>모드</label>
+    <select id="qaMode">
+      <option value="rag">rag</option>
+      <option value="llm_only">llm_only</option>
+    </select>
+    <label>사용자 ID</label>
+    <input id="qaUser" value="u001" />
+    <button onclick="runQA()">QA 실행</button>
+    <pre id="qaResult">결과 대기중...</pre>
+  </div>
+
+  <div class="card">
+    <h2>2) MariaDB 자연어 조회</h2>
+    <label>질문</label>
+    <textarea id="dbQuestion" rows="2">최근 7일 CRL 오류 이력 보여줘</textarea>
+    <label>사용자 ID</label>
+    <input id="dbUser" value="u001" />
+    <button onclick="runDB()">조회 실행</button>
+    <pre id="dbResult">결과 대기중...</pre>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <h2>3) 최근 질의 이력</h2>
+      <label>사용자 ID</label>
+      <input id="historyUser" value="u001" />
+      <button onclick="loadHistory()">이력 조회</button>
+      <pre id="historyResult">결과 대기중...</pre>
+    </div>
+    <div class="card">
+      <h2>4) 성능 요약</h2>
+      <button onclick="loadMetrics()">메트릭 조회</button>
+      <pre id="metricsResult">결과 대기중...</pre>
+    </div>
+  </div>
+
+<script>
+async function runQA() {
+  const payload = {
+    question: document.getElementById('qaQuestion').value,
+    mode: document.getElementById('qaMode').value,
+    user_id: document.getElementById('qaUser').value
+  };
+  const res = await fetch('/api/v1/qa/query', {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+  });
+  document.getElementById('qaResult').textContent = JSON.stringify(await res.json(), null, 2);
+}
+
+async function runDB() {
+  const payload = {
+    question: document.getElementById('dbQuestion').value,
+    user_id: document.getElementById('dbUser').value
+  };
+  const res = await fetch('/api/v1/db/nl-query', {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+  });
+  document.getElementById('dbResult').textContent = JSON.stringify(await res.json(), null, 2);
+}
+
+async function loadHistory() {
+  const user = document.getElementById('historyUser').value;
+  const res = await fetch(`/api/v1/history/recent?user_id=${encodeURIComponent(user)}&limit=20`);
+  document.getElementById('historyResult').textContent = JSON.stringify(await res.json(), null, 2);
+}
+
+async function loadMetrics() {
+  const res = await fetch('/api/v1/metrics/summary?mode=all&period=24h&device=all');
+  document.getElementById('metricsResult').textContent = JSON.stringify(await res.json(), null, 2);
+}
+</script>
+</body>
+</html>
