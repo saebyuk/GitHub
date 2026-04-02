@@ -1,10 +1,10 @@
 # 폐쇄망 On-Device LLM 도우미 PoC
 
-PDF 매뉴얼 기반 QA(RAG/LLM-Only 선택) + MariaDB 자연어 조회 + 질의 이력/메트릭 API + **통합 웹 UI(사용자/관리자)**를 포함한 PoC 프로젝트입니다.
+PDF 매뉴얼 기반 QA(RAG/LLM-Only 선택) + MariaDB 자연어 조회 + 질의 이력/메트릭 API + **기본 웹 UI**를 포함한 PoC 프로젝트입니다.
 
 ## 구현 상태 (현재 코드 기준)
 - FastAPI 서버 및 핵심 API 구현
-- 브라우저 UI(`/`)에서 사용자 기능(QA/DB조회/이력/메트릭) + 관리자 기능(문서업로드/검수/재학습) 실행 가능
+- 브라우저 UI(`/`)에서 QA/DB조회/이력/메트릭 실행 가능
 - QA 모드 선택(`rag`, `llm_only`) 구현
 - MariaDB NL2SQL(안전 SELECT 템플릿) 구현
 - 최근 질의 이력 조회 API 구현(메모리 저장소)
@@ -55,9 +55,6 @@ uvicorn app.main:app --reload --port 8000
 
 ### 5) 관리자 PoC API
 - `POST /api/v1/admin/documents/upload`
-- `GET /api/v1/admin/documents`
-- `POST /api/v1/admin/knowledge/review`
-- `GET /api/v1/admin/knowledge/reviews`
 - `POST /api/v1/admin/reindex`
 
 ## 디렉토리 구조
