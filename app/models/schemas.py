@@ -50,3 +50,10 @@ class MetricsSummary(BaseModel):
     total_queries: int
     avg_latency_ms: float
     p95_latency_ms: float
+
+
+class KnowledgeReviewRequest(BaseModel):
+    source: str = Field(default="manual_v1.pdf#p1")
+    original_text: str = Field(min_length=2)
+    revised_text: str = Field(min_length=2)
+    reviewer: str = Field(default="admin")
